@@ -1,0 +1,36 @@
+TESTS WITH ERRORS 
+test01 (gradingtests.UnitTests)
+Traceback (most recent call last):
+  File "/Users/k2i/academics/automatedgradingapp/app/testing/kb-inference-ec/gradingtests.py", line 23, in test01
+    self.compare("Fact is not in the KB", actual)
+  File "/Users/k2i/academics/automatedgradingapp/app/testing/kb-inference-ec/gradingtests.py", line 14, in compare
+    alist = actual.split('\n')
+AttributeError: 'NoneType' object has no attribute 'split'
+
+test02 (gradingtests.UnitTests)
+Traceback (most recent call last):
+  File "/Users/k2i/academics/automatedgradingapp/app/testing/kb-inference-ec/gradingtests.py", line 27, in test02
+    self.compare("Rule is not in the KB", actual)
+  File "/Users/k2i/academics/automatedgradingapp/app/testing/kb-inference-ec/gradingtests.py", line 14, in compare
+    alist = actual.split('\n')
+AttributeError: 'NoneType' object has no attribute 'split'
+
+test04 (gradingtests.UnitTests)
+Traceback (most recent call last):
+  File "/Users/k2i/academics/automatedgradingapp/app/testing/kb-inference-ec/gradingtests.py", line 135, in test04
+    self.compare(self.expected, actual)
+  File "/Users/k2i/academics/automatedgradingapp/app/testing/kb-inference-ec/gradingtests.py", line 14, in compare
+    alist = actual.split('\n')
+AttributeError: 'NoneType' object has no attribute 'split'
+
+-------------------------------
+TESTS FAILED  
+test03 (gradingtests.UnitTests)
+Traceback (most recent call last):
+  File "/Users/k2i/academics/automatedgradingapp/app/testing/kb-inference-ec/gradingtests.py", line 73, in test03
+    self.assertEqual(self.KB.kb_explain(fact4), answer1)
+AssertionError: None != 'fact: (covered B)\n  SUPPORTED BY\n    f[304 chars]ED\n'
+
+-------------------------------
+TESTS SKIPPED 
+-------------------------------
