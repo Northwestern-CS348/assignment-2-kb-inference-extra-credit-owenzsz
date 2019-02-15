@@ -15,6 +15,14 @@ Traceback (most recent call last):
     alist = actual.split('\n')
 AttributeError: 'NoneType' object has no attribute 'split'
 
+test03 (gradingtests.UnitTests)
+Traceback (most recent call last):
+  File "/Users/k2i/academics/automatedgradingapp/app/testing/kb-inference-ec/gradingtests.py", line 73, in test03
+    self.compare(self.KB.kb_explain(fact4), answer1)
+  File "/Users/k2i/academics/automatedgradingapp/app/testing/kb-inference-ec/gradingtests.py", line 13, in compare
+    elist = expected.split('\n')
+AttributeError: 'NoneType' object has no attribute 'split'
+
 test04 (gradingtests.UnitTests)
 Traceback (most recent call last):
   File "/Users/k2i/academics/automatedgradingapp/app/testing/kb-inference-ec/gradingtests.py", line 135, in test04
@@ -25,12 +33,6 @@ AttributeError: 'NoneType' object has no attribute 'split'
 
 -------------------------------
 TESTS FAILED  
-test03 (gradingtests.UnitTests)
-Traceback (most recent call last):
-  File "/Users/k2i/academics/automatedgradingapp/app/testing/kb-inference-ec/gradingtests.py", line 73, in test03
-    self.assertEqual(self.KB.kb_explain(fact4), answer1)
-AssertionError: None != 'fact: (covered B)\n  SUPPORTED BY\n    f[304 chars]ED\n'
-
 -------------------------------
 TESTS SKIPPED 
 -------------------------------
