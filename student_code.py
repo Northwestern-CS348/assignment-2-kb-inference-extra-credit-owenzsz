@@ -130,6 +130,23 @@ class KnowledgeBase(object):
         # Implementation goes here
         # Not required for the extra credit assignment
 
+    def find_support(self, fact_or_rule, result):
+        if fact_or_rule.supported_by:
+            result += "\n" + "  SUPPORTED BY" + "\n" + "  "
+            for fr_pair in fact_or_rule.supported_by:
+                result += "fact: " + "(" + fr_pair[0].statement.predicate + " " + ' '.join((str(t) for t in fr_pair[0].statement.terms)) + ")"
+                if fr_pair[0].asserted:
+                    result += " ASSERTED"
+                result += "\n"
+                result += "rule: " + "(" + fr_pair[1].statement.predicate + " " + ' '.join((str(t) for t in fr_pair[1].lhs.statement.terms)) + ")"
+                +" -> " + "(" + str(fr_pair.rhs) + ")"
+                if fr_pair[1].asserted:
+                    result += " ASSERTED"
+                result += "\n"
+                for fact, rule in fr_pair:
+                    self.find_support(fact, result)
+                    self.find_support(rule, result)
+
     def kb_explain(self, fact_or_rule):
         """
         Explain where the fact or rule comes from
@@ -142,6 +159,30 @@ class KnowledgeBase(object):
         """
         ####################################################
         # Student code goes here
+        if isinstance(fact_or_rule, Fact):
+            _statement = fact_or_rule.statement
+            result = "fact: "
+            if fact_or_rule in self.facts:
+                result += "(" + _statement.predicate + " " + ' '.join((str(t) for t in _statement.terms)) + ")"
+                self.find_support(fact_or_rule, result)
+                return result
+            else:
+                not_in = "Fact is not in the KB"
+                return not_in
+
+        elif isinstance(fact_or_rule, Rule):
+            result = "rule: "
+            if fact_or_rule in self.rules:
+                results += "(" + fr_pair[1].statement.predicate + " " + ' '.join((str(t) for t in fr_pair[1].lhs.statement.terms)) + ")"
+                +" -> " + "(" + str(fr_pair.rhs) + ")"
+                self.find_support(fact_or_rule, result)
+                return result
+            else:
+                not_in = "Rule is not in the KB"
+                return not_in
+
+        else:
+            return False
 
 
 class InferenceEngine(object):
