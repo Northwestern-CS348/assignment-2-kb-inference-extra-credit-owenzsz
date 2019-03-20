@@ -131,6 +131,61 @@ class KnowledgeBase(object):
         # Not required for the extra credit assignment
 
 
+    def find_support(self, fact_or_rule, accumulator):
+        result = ""  # initialize
+        if isinstance(fact_or_rule, Fact):
+            destined_fact = self._get_fact(fact_or_rule)
+            for f_support_pair in destined_fact.supported_by:
+                support_fact = self._get_fact(f_support_pair[0])
+                support_rule = self._get_rule(f_support_pair[1])
+                result += " " * (accumulator + 2) + "SUPPORTED BY" + "\n"
+                result += " " * (accumulator + 4)
+                result += "fact: " + "(" + support_fact.statement.predicate + " " + ' '.join(
+                    (str(t) for t in support_fact.statement.terms)) + ")"
+                if support_fact.asserted:
+                    result += " ASSERTED"
+                result += '\n'
+                result += " " * (accumulator + 4)
+                result += "rule: " + "(" + str(support_rule.lhs[0])
+                for i in range(1, len(support_rule.lhs)):
+                    result += ", " + str(support_rule.lhs[i])
+                result += ") -> "
+                result += str(support_rule.rhs)
+                if support_rule.asserted:
+                    result += " ASSERTED"
+                result += '\n'
+
+                result += self.find_support(support_fact, accumulator+4)
+                result += self.find_support(support_rule, accumulator+4)
+
+
+        elif isinstance(fact_or_rule, Rule):  # same as fact
+            destined_rule = self._get_rule(fact_or_rule)
+            for r_support_pair in destined_rule.supported_by:
+                support_fact = self._get_fact(r_support_pair[0])
+                support_rule = self._get_rule(r_support_pair[1])
+                result += " " * (accumulator + 2) + "SUPPORTED BY" + "\n"
+                result += " " * (accumulator + 4)
+                result += "fact: " + "(" + support_fact.statement.predicate + " " + ' '.join(
+                    (str(t) for t in support_fact.statement.terms)) + ")"
+                if support_fact.asserted:
+                    result += " ASSERTED"
+                result += '\n'
+                result += " " * (accumulator + 4)
+                result += "rule: " + "(" + str(support_rule.lhs[0])  # add first lhs element without ,
+                for i in range(1, len(support_rule.lhs)):
+                    result += ", " + str(support_rule.lhs[i])
+                result += ") -> "
+                result += str(support_rule.rhs)
+                if support_rule.asserted: result += " ASSERTED"
+                result += '\n'
+
+                result += self.find_support(support_fact, accumulator + 4)
+                result += self.find_support(support_rule, accumulator + 4)
+
+        return result
+
+
     def kb_explain(self, fact_or_rule):
         """
         Explain where the fact or rule comes from
@@ -143,63 +198,37 @@ class KnowledgeBase(object):
         """
         ####################################################
         # Student code goes here
-        if isinstance(fact_or_rule, Fact): #if it's a fact
-            if fact_or_rule in self.facts: #if in kb
-                f_result = ""   #initialize
-                kbfact = self._get_fact(fact_or_rule) #get fact from kb
-                result = self.find_support(kbfact, f_result, 0) #helper
+        if isinstance(fact_or_rule, Fact):  # if it's a fact
+            if fact_or_rule in self.facts:  # if in kb
+                f_result = ""  # initialize
+                f_result += "fact: " + "(" + fact_or_rule.statement.predicate + " " + ' '.join(
+                    (str(t) for t in fact_or_rule.statement.terms)) + ")" + "\n"
+                result =f_result + self.find_support(fact_or_rule, 0)  # helper
                 return result
-            else: #if not in kb
+            else:  # if not in kb
                 not_in = "Fact is not in the KB"
                 return not_in
 
-        elif isinstance(fact_or_rule, Rule): #repeat same steps for fact
+        elif isinstance(fact_or_rule, Rule):  # repeat same steps for fact
             if fact_or_rule in self.rules:
                 r_result = ""
-                kbrule = self._get_rule(fact_or_rule)
-                result = self.find_support(kbrule, r_result, 0)
+                r_result += "rule: " + "(" + str(fact_or_rule.lhs[0])
+                for i in range(1, len(fact_or_rule.lhs)):
+                    r_result += ", " + str(fact_or_rule.lhs[i])
+                r_result += ") -> "
+                r_result += str(fact_or_rule.rhs) + "\n"
+                result = r_result + self.find_support(fact_or_rule, 0)
                 return result
             else:
                 not_in = "Rule is not in the KB"
                 return not_in
-        #if the input is neither a fact nor a rule
+        # if the input is neither a fact nor a rule
         else:
-            return "Invalid Input"
+            return "Invalid Input" 
 
 
-    def find_support(self, fact_or_rule, result, accumulator):
-        result = "" #initialize
-        if isinstance(fact_or_rule, Fact):
-            destined_fact = self._get_fact(fact_or_rule) #get fact from kb
-            # initialize the first fact
-            result += "fact: " + "(" + destined_fact.statement.predicate + " " + ' '.join((str(t) for t in destined_fact.statement.terms)) + ")"
-            #add asserted when conditions are met
-            if destined_fact.asserted: result += " ASSERTED"
-            result += '\n'
-            for f_support_pair in destined_fact.supported_by:
-                result += " " * (accumulator+2) + "SUPPORTED BY" + "\n" #supported by + line
-                result += " " * (accumulator+4) #empty space
-                result += self.find_support(f_support_pair[0], result, accumulator+4) #supporting fact
-                result += " " * (accumulator+4)
-                result += self.find_support(f_support_pair[1], result, accumulator+4) #supporting rule
 
-        elif isinstance(fact_or_rule, Rule): #same as fact
-            destined_rule = self._get_rule(fact_or_rule)
-            result += "rule: " + "(" + str(destined_rule.lhs[0]) #add first lhs element without ,
-            for i in range(1, len(destined_rule.lhs)):
-                result += ", " + str(destined_rule.lhs[i])
-            result += ") -> "
-            result += str(destined_rule.rhs)
-            if destined_rule.asserted: result += " ASSERTED"
-            result += '\n'
-            for r_support_pair in destined_rule.supported_by:
-                result += " " * (accumulator+2) + "SUPPORTED BY" + "\n"
-                result += " " * (accumulator+4)
-                result += self.find_support(r_support_pair[0], result, accumulator+4)
-                result += " " * (accumulator+4)
-                result += self.find_support(r_support_pair[1], result, accumulator+4)
 
-        return result
 
 
 class InferenceEngine(object):
