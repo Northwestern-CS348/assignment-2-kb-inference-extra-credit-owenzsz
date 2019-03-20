@@ -14,7 +14,7 @@ class KBTest(unittest.TestCase):
         alist = actual.split('\n')
         for e, a in zip(elist, alist):
             if e.lower() != a.rstrip().lower():
-                self.assertEquals('"{0}" ({1} lead spaces)'.format(e, len(e) - len(e.lstrip())), 
+                self.assertEquals('"{0}" ({1} lead spaces)'.format(e, len(e) - len(e.lstrip())),
                     '"{0}" ({1} lead spaces)'.format(a, len(a) - len(a.strip())))
 
     def test01(self):

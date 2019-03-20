@@ -130,22 +130,6 @@ class KnowledgeBase(object):
         # Implementation goes here
         # Not required for the extra credit assignment
 
-    def find_support(self, fact_or_rule, result):
-        if fact_or_rule.supported_by:
-            result += "\n" + "  SUPPORTED BY" + "\n" + "  "
-            for fr_pair in fact_or_rule.supported_by:
-                result += "fact: " + "(" + fr_pair[0].statement.predicate + " " + ' '.join((str(t) for t in fr_pair[0].statement.terms)) + ")"
-                if fr_pair[0].asserted:
-                    result += " ASSERTED"
-                result += "\n"
-                result += "rule: " + "(" + fr_pair[1].statement.predicate + " " + ' '.join((str(t) for t in fr_pair[1].lhs.statement.terms)) + ")"
-                +" -> " + "(" + str(fr_pair.rhs) + ")"
-                if fr_pair[1].asserted:
-                    result += " ASSERTED"
-                result += "\n"
-                for fact, rule in fr_pair:
-                    self.find_support(fact, result)
-                    self.find_support(rule, result)
 
     def kb_explain(self, fact_or_rule):
         """
@@ -160,29 +144,60 @@ class KnowledgeBase(object):
         ####################################################
         # Student code goes here
         if isinstance(fact_or_rule, Fact):
-            _statement = fact_or_rule.statement
-            result = "fact: "
             if fact_or_rule in self.facts:
-                result += "(" + _statement.predicate + " " + ' '.join((str(t) for t in _statement.terms)) + ")"
-                self.find_support(fact_or_rule, result)
+                f_result = ""
+                kbfact = self._get_fact(fact_or_rule)
+                result = self.find_support(kbfact, f_result, 0)
                 return result
             else:
                 not_in = "Fact is not in the KB"
                 return not_in
 
         elif isinstance(fact_or_rule, Rule):
-            result = "rule: "
             if fact_or_rule in self.rules:
-                results += "(" + fr_pair[1].statement.predicate + " " + ' '.join((str(t) for t in fr_pair[1].lhs.statement.terms)) + ")"
-                +" -> " + "(" + str(fr_pair.rhs) + ")"
-                self.find_support(fact_or_rule, result)
+                r_result = ""
+                kbrule = self._get_rule(fact_or_rule)
+                result = self.find_support(kbrule, r_result, 0)
                 return result
             else:
                 not_in = "Rule is not in the KB"
                 return not_in
 
         else:
-            return False
+            return "Invalid Input"
+
+
+    def find_support(self, fact_or_rule, result, accumulator):
+        result = ""
+        if isinstance(fact_or_rule, Fact):
+            destined_fact = self._get_fact(fact_or_rule)
+            result += "fact: " + "(" + destined_fact.statement.predicate + " " + ' '.join((str(t) for t in destined_fact.statement.terms)) + ")"
+            if destined_fact.asserted: result += " ASSERTED"
+            result += '\n'
+            for f_support_pair in destined_fact.supported_by:
+                result += " " * (accumulator+2) + "SUPPORTED BY" + "\n"
+                result += " " * (accumulator+4)
+                result += self.find_support(f_support_pair[0], result, accumulator+4)
+                result += " " * (accumulator+4)
+                result += self.find_support(f_support_pair[1], result, accumulator+4)
+            return result
+
+        elif isinstance(fact_or_rule, Rule):
+            destined_rule = self._get_rule(fact_or_rule)
+            result += "rule: " + "(" + str(destined_rule.lhs[0])
+            for i in range(1, len(destined_rule.lhs)):
+                result += ", " + str(destined_rule.lhs[i])
+            result += ") -> "
+            result += str(destined_rule.rhs)
+            if destined_rule.asserted: result += " ASSERTED"
+            result += '\n'
+            for r_support_pair in destined_rule.supported_by:
+                result += " " * (accumulator+2) + "SUPPORTED BY" + "\n"
+                result += " " * (accumulator+4)
+                result += self.find_support(r_support_pair[0], result, accumulator+4)
+                result += " " * (accumulator+4)
+                result += self.find_support(r_support_pair[1], result, accumulator+4)
+            return result
 
 
 class InferenceEngine(object):
